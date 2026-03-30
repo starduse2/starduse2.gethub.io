@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <i class="fas fa-user-edit"></i> تعديل بيانات الموظف
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-4 mb-3"><label>النمرة *</label><input type="text" name="numera" class="form-control" value="{{ employee.numera }}" required></div>
+                <div class="col-md-4 mb-3"><label>الرتبة</label><input type="text" name="rank" class="form-control" value="{{ employee.rank }}"></div>
+                <div class="col-md-4 mb-3"><label>الاسم *</label><input type="text" name="name" class="form-control" value="{{ employee.name }}" required></div>
+                <div class="col-md-3 mb-3"><label>الدائرة</label><input type="text" name="department" class="form-control" value="{{ employee.department }}"></div>
+                <div class="col-md-3 mb-3"><label>الإدارة</label><input type="text" name="administration" class="form-control" value="{{ employee.administration }}"></div>
+                <div class="col-md-3 mb-3"><label>الهاتف</label><input type="text" name="phone" class="form-control" value="{{ employee.phone }}"></div>
+                <div class="col-md-3 mb-3"><label>واتساب</label><input type="text" name="whatsapp" class="form-control" value="{{ employee.whatsapp }}"></div>
+                <div class="col-md-3 mb-3"><label>المهنة</label><input type="text" name="profession" class="form-control" value="{{ employee.profession }}"></div>
+                <div class="col-md-3 mb-3"><label>تاريخ التجنيد</label><input type="date" name="enlistment_date" class="form-control" value="{{ employee.enlistment_date }}"></div>
+                <div class="col-md-6 mb-3"><label>ملاحظات</label><textarea name="notes" class="form-control" rows="2">{{ employee.notes }}</textarea></div>
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> تحديث</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">إلغاء</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
