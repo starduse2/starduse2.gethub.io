@@ -240,4 +240,4 @@ def import_data():
     return render_template('import.html')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='localhost', port=81)
+    app.run(debug=True, host='https://github.com/starduse2/starduse2.gethub.io', port=81)
