@@ -7,32 +7,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        body {
-            background: #f4f6f9;
-            font-family: 'Tahoma', 'Segoe UI', sans-serif;
-        }
-        .navbar {
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .card-header {
-            background-color: #0d6efd;
-            color: white;
-            font-weight: bold;
-        }
-        .btn-sm {
-            margin: 2px;
-        }
-        .table th, .table td {
-            vertical-align: middle;
-            text-align: center;
-        }
-        .footer {
-            background-color: #fff;
-            border-top: 1px solid #dee2e6;
-            margin-top: 30px;
-            padding: 15px;
-            text-align: center;
-        }
+        body { background: #f4f6f9; font-family: 'Tahoma', 'Segoe UI', sans-serif; }
+        .navbar { box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .card-header { background-color: #0d6efd; color: white; font-weight: bold; }
+        .btn-sm { margin: 2px; }
+        .table th, .table td { vertical-align: middle; text-align: center; }
+        .footer { background-color: #fff; border-top: 1px solid #dee2e6; margin-top: 30px; padding: 15px; text-align: center; }
     </style>
 </head>
 <body>
@@ -41,12 +21,29 @@
             <a class="navbar-brand" href="{{ url_for('index') }}">
                 <i class="fas fa-users"></i> نظام إدارة الموظفين
             </a>
-            <div class="collapse navbar-collapse">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">الرئيسية</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('add_employee') }}">إضافة موظف</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('import_data') }}">استيراد</a></li>
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.role == 'admin' %}
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('list_users') }}">المستخدمين</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ url_for('import_data') }}">استيراد</a></li>
+                        {% endif %}
+                        {% if current_user.is_authenticated and user_can_add() %}
+							<li class="nav-item"><a class="nav-link" href="{{ url_for('add_employee') }}">إضافة موظف</a></li>
+						{% endif %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">تسجيل خروج</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">دخول</a></li>
+                    {% endif %}
                 </ul>
+                {% if current_user.is_authenticated %}
+                    <span class="navbar-text text-light">
+                        مرحباً {{ current_user.username }} ({% if current_user.role == 'admin' %}مدير{% else %}مستخدم عادي{% endif %})
+                    </span>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -72,7 +69,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // تحديد/إلغاء تحديد كل الصفوف
         function toggleSelectAll(source) {
             let checkboxes = document.getElementsByName('selected_ids');
             for(let i=0; i<checkboxes.length; i++) {

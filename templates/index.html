@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="card shadow">
     <div class="card-header">
@@ -34,25 +33,27 @@
             </div>
         </form>
 
-        <!-- نموذج الإجراءات الجماعية (حذف / تصدير) -->
-        <form method="POST" action="{{ url_for('delete_selected') }}" id="bulkForm">
+        <!-- نموذج الإجراءات الجماعية -->
+        <form method="POST" id="bulkForm">
+            {% if current_user.role == 'admin' %}
             <div class="mb-3">
                 <button type="submit" formaction="{{ url_for('delete_selected') }}" class="btn btn-danger" onclick="return confirm('هل أنت متأكد من حذف الموظفين المحددين؟')">
                     <i class="fas fa-trash-alt"></i> حذف المحددين
                 </button>
-                <button type="submit" formaction="{{ url_for('export') }}" formmethod="POST" class="btn btn-success">
+                <button type="submit" formaction="{{ url_for('export') }}" class="btn btn-success">
                     <i class="fas fa-download"></i> تصدير المحددين (Excel)
                 </button>
-                <button type="submit" formaction="{{ url_for('export') }}" formmethod="POST" class="btn btn-info" onclick="selectAllForExport();">
+                <button type="submit" formaction="{{ url_for('export') }}" class="btn btn-info" onclick="selectAllForExport();">
                     <i class="fas fa-file-excel"></i> تصدير الكل
                 </button>
             </div>
+            {% endif %}
 
             <div class="table-responsive">
                 <table class="table table-bordered table-hover">
                     <thead class="table-dark">
                         <tr>
-                            <th><input type="checkbox" onclick="toggleSelectAll(this)"></th>
+                            {% if current_user.role == 'admin' %}<th><input type="checkbox" onclick="toggleSelectAll(this)"></th>{% endif %}
                             <th>النمرة</th><th>الرتبة</th><th>الاسم</th><th>الدائرة</th><th>الإدارة</th>
                             <th>الهاتف</th><th>واتساب</th><th>المهنة</th><th>تاريخ التجنيد</th><th>ملاحظات</th><th>إجراءات</th>
                         </tr>
@@ -60,7 +61,7 @@
                     <tbody>
                         {% for emp in employees %}
                         <tr>
-                            <td><input type="checkbox" name="selected_ids" value="{{ emp.id }}"></td>
+                            {% if current_user.role == 'admin' %}<td><input type="checkbox" name="selected_ids" value="{{ emp.id }}"></td>{% endif %}
                             <td>{{ emp.numera }}</td>
                             <td>{{ emp.rank }}</td>
                             <td>{{ emp.name }}</td>
@@ -72,12 +73,16 @@
                             <td>{{ emp.enlistment_date }}</td>
                             <td>{{ emp.notes }}</td>
                             <td>
-                                <a href="{{ url_for('edit_employee', id=emp.id) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> تعديل</a>
-                                <a href="{{ url_for('delete_employee', id=emp.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('حذف الموظف؟')"><i class="fas fa-trash"></i> حذف</a>
+                                {% if current_user.role == 'admin' %}
+                                    <a href="{{ url_for('edit_employee', id=emp.id) }}" class="btn btn-sm btn-warning">تعديل</a>
+                                    <a href="{{ url_for('delete_employee', id=emp.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('حذف الموظف؟')">حذف</a>
+                                {% else %}
+                                    <span class="text-muted">غير مسموح</span>
+                                {% endif %}
                             </td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="12" class="text-center">لا يوجد بيانات</td></tr>
+                        <tr><td colspan="{% if current_user.role == 'admin' %}12{% else %}11{% endif %}" class="text-center">لا يوجد بيانات</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -88,7 +93,6 @@
 
 <script>
     function selectAllForExport() {
-        // تحديد كل الـ checkboxes قبل الإرسال لتصدير الكل
         let checkboxes = document.getElementsByName('selected_ids');
         for(let i=0; i<checkboxes.length; i++) {
             checkboxes[i].checked = true;

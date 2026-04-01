@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-dark text-white">إضافة مستخدم جديد</div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="mb-3">
+                <label>اسم المستخدم</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>كلمة المرور</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>الصلاحية</label>
+                <select name="role" class="form-select">
+                    <option value="user">مستخدم عادي (إضافة فقط)</option>
+                    <option value="admin">مدير (كامل الصلاحيات)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">إضافة</button>
+            <a href="{{ url_for('list_users') }}" class="btn btn-secondary">إلغاء</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

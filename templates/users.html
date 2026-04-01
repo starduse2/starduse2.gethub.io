@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow">
+    <div class="card-header bg-dark text-white">
+        <i class="fas fa-users"></i> إدارة المستخدمين
+        <a href="{{ url_for('add_user') }}" class="btn btn-sm btn-success float-start">إضافة مستخدم جديد</a>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered">
+            <thead>
+                <tr><th>#</th><th>اسم المستخدم</th><th>الصلاحية</th><th>إجراءات</th></tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{% if user.role == 'admin' %}مدير{% else %}مستخدم عادي{% endif %}</td>
+                    <td>
+                        {% if user.id != current_user.id %}
+                        <a href="{{ url_for('delete_user', id=user.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('حذف المستخدم؟')">حذف</a>
+                        {% else %}
+                        <span class="text-muted">(أنت)</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% block content %}
 <div class="card shadow">
     <div class="card-header">
@@ -10,7 +9,7 @@
             <div class="mb-3">
                 <label class="form-label">اختر الملف (CSV أو XLSX)</label>
                 <input type="file" name="file" class="form-control" accept=".csv,.xlsx" required>
-                <div class="form-text">يجب أن يحتوي الملف على الأعمدة التالية بالترتيب أو بنفس الأسماء: النمرة، الرتبة، الاسم، الدائرة، الإدارة، الهاتف، واتساب، المهنة، تاريخ التجنيد، ملاحظات.</div>
+                <div class="form-text">يجب أن يحتوي الملف على الأعمدة التالية: النمرة، الرتبة، الاسم، الدائرة، الإدارة، الهاتف، واتساب، المهنة، تاريخ التجنيد، ملاحظات.</div>
                 <div class="form-text text-info">سيتم تخطي السجلات التي لها نفس النمرة الموجودة مسبقاً.</div>
             </div>
             <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> رفع واستيراد</button>
