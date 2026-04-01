@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow">
+    <div class="card-header">
+        <i class="fas fa-list"></i> قائمة الموظفين 
+        <span class="badge bg-light text-dark">الإجمالي: {{ total_count }}</span>
+    </div>
+    <div class="card-body">
+        <!-- شريط البحث والفرز -->
+        <form method="GET" class="row g-3 mb-4">
+            <div class="col-md-4">
+                <label class="form-label">بحث بـ</label>
+                <select name="search_type" class="form-select">
+                    <option value="name" {% if search_type=='name' %}selected{% endif %}>الاسم</option>
+                    <option value="numera" {% if search_type=='numera' %}selected{% endif %}>النمرة</option>
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label">كلمة البحث</label>
+                <input type="text" name="search" class="form-control" value="{{ search_term }}" placeholder="أدخل نص البحث...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">الفرز حسب</label>
+                <select name="sort_by" class="form-select">
+                    <option value="">بدون فرز</option>
+                    <option value="department" {% if sort_by=='department' %}selected{% endif %}>الدائرة</option>
+                    <option value="administration" {% if sort_by=='administration' %}selected{% endif %}>الإدارة</option>
+                </select>
+            </div>
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> بحث/فرز</button>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary"><i class="fas fa-sync-alt"></i> إعادة تعيين</a>
+            </div>
+        </form>
+
+        <!-- نموذج الإجراءات الجماعية -->
+        <form method="POST" id="bulkForm">
+            {% if current_user.role == 'admin' %}
+            <div class="mb-3">
+                <button type="submit" formaction="{{ url_for('delete_selected') }}" class="btn btn-danger" onclick="return confirm('هل أنت متأكد من حذف الموظفين المحددين؟')">
+                    <i class="fas fa-trash-alt"></i> حذف المحددين
+                </button>
+                <button type="submit" formaction="{{ url_for('export') }}" class="btn btn-success">
+                    <i class="fas fa-download"></i> تصدير المحددين (Excel)
+                </button>
+                <button type="submit" formaction="{{ url_for('export') }}" class="btn btn-info" onclick="selectAllForExport();">
+                    <i class="fas fa-file-excel"></i> تصدير الكل
+                </button>
+            </div>
+            {% endif %}
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            {% if current_user.role == 'admin' %}<th><input type="checkbox" onclick="toggleSelectAll(this)"></th>{% endif %}
+                            <th>النمرة</th><th>الرتبة</th><th>الاسم</th><th>الدائرة</th><th>الإدارة</th>
+                            <th>الهاتف</th><th>واتساب</th><th>المهنة</th><th>تاريخ التجنيد</th><th>ملاحظات</th><th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for emp in employees %}
+                        <tr>
+                            {% if current_user.role == 'admin' %}<td><input type="checkbox" name="selected_ids" value="{{ emp.id }}"></td>{% endif %}
+                            <td>{{ emp.numera }}</td>
+                            <td>{{ emp.rank }}</td>
+                            <td>{{ emp.name }}</td>
+                            <td>{{ emp.department }}</td>
+                            <td>{{ emp.administration }}</td>
+                            <td>{{ emp.phone }}</td>
+                            <td>{{ emp.whatsapp }}</td>
+                            <td>{{ emp.profession }}</td>
+                            <td>{{ emp.enlistment_date }}</td>
+                            <td>{{ emp.notes }}</td>
+                            <td>
+                                {% if current_user.role == 'admin' %}
+                                    <a href="{{ url_for('edit_employee', id=emp.id) }}" class="btn btn-sm btn-warning">تعديل</a>
+                                    <a href="{{ url_for('delete_employee', id=emp.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('حذف الموظف؟')">حذف</a>
+                                {% else %}
+                                    <span class="text-muted">غير مسموح</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="{% if current_user.role == 'admin' %}12{% else %}11{% endif %}" class="text-center">لا يوجد بيانات</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function selectAllForExport() {
+        let checkboxes = document.getElementsByName('selected_ids');
+        for(let i=0; i<checkboxes.length; i++) {
+            checkboxes[i].checked = true;
+        }
+        document.getElementById('bulkForm').action = "{{ url_for('export') }}";
+        document.getElementById('bulkForm').submit();
+    }
+</script>
+{% endblock %}
